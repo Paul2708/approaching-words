@@ -11,7 +11,7 @@ export default function App() {
     }
 
     return (
-        <div className="p-8">
+        <div className="p-8 min-h-screen">
             <div className="font-title uppercase text-4xl flex flex-col text-white">
                 <div
                     className="self-start drop-shadow-[5px_5px_5px_rgba(0,0,0,1)] animate-move-left-to-right">Approaching
