@@ -1,6 +1,6 @@
 import {useState} from "react";
 
-export default function App() {
+export default function LandingPage() {
     const [username, setUsername] = useState("")
     const [clicked, setClicked] = useState(false)
 
