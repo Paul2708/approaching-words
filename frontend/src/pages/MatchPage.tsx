@@ -1,7 +1,31 @@
 import {useState} from "react";
+import WordList, {WordPair} from "../components/WordList.tsx";
 
 export default function MatchPage() {
     const [clicked, setClicked] = useState(false)
+
+    const wordPairs: WordPair[] = [
+        {
+            word: {
+                text: "",
+                hidden: false
+            },
+            teamMateWord: {
+                text: "abcdefghi",
+                hidden: true
+            },
+        },
+        {
+            word: {
+                text: "apple",
+                hidden: false
+            },
+            teamMateWord: {
+                text: "chess",
+                hidden: false
+            },
+        }
+    ]
 
     return (
         <div className="p-8 min-h-screen">
@@ -42,45 +66,7 @@ export default function MatchPage() {
                 </div>
             </div>
 
-            <div className="font-header flex flex-col items-center pt-8">
-                <div className="text-white text-3xl">Recent Words</div>
-                <div className="w-full max-w-4xl pt-2">
-                    <div className="flex flex-row w-full">
-                        <div className="w-1/2 text-center underline">You</div>
-                        <div className="w-1/2 text-center">SharebinAPI</div>
-                    </div>
-                </div>
-                <div className="w-full max-w-4xl bg-[#CA7C7C] text-white shadow-lg rounded">
-                    <div className="flex flex-col w-full">
-
-                        <div className="flex w-full">
-                            <div className="w-1/2 p-2 text-center">Column 1, Row 1</div>
-                            <div className="w-1/2 p-2 text-center blur-sm">abcdefghi</div>
-                        </div>
-
-                        <div className="flex w-full">
-                            <div className="w-1/2 p-2 text-center">Column 1, Row 2</div>
-                            <div className="w-1/2 p-2 text-center">Column 2, Row 2</div>
-                        </div>
-
-                        <div className="flex w-full">
-                            <div className="w-1/2 p-2 text-center">Column 1, Row 3</div>
-                            <div className="w-1/2 p-2 text-center">Column 2, Row 3</div>
-                        </div>
-
-                        <div className="flex w-full">
-                            <div className="w-1/2 p-2 text-center">Column 1, Row 4</div>
-                            <div className="w-1/2 p-2 text-center">Column 2, Row 4</div>
-                        </div>
-
-                        <div className="flex w-full">
-                            <div className="w-1/2 p-2 text-center">Column 1, Row 5</div>
-                            <div className="w-1/2 p-2 text-center">Column 2, Row 5</div>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
+            <WordList title="Recent Words" teamMate="SharebinAPI" wordPairs={wordPairs}/>
         </div>
     )
 }
