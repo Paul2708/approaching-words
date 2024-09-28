@@ -3,8 +3,23 @@ import {useState} from "react";
 export default function LandingPage() {
     const [username, setUsername] = useState("")
     const [clicked, setClicked] = useState(false)
+    const [error, setError] = useState("")
 
     function searchGame() {
+        // Validate username
+        if (username.length > 16) {
+            setError("The username is too long. Only 16 characters are allowed.")
+            return
+        }
+
+        const regex = /^[a-zA-Z0-9_-]+$/
+        if (!regex.test(username)) {
+            setError("The username contains illegal characters. Only alphanumeric characters, -, and _ are allowed.")
+            return;
+        }
+
+        // Search game
+        setError("")
         setClicked(true)
 
         console.log(username)
@@ -50,6 +65,12 @@ export default function LandingPage() {
                     }
                 </div>
             </div>
+
+            {error !== "" &&
+                <div className="flex flex-col items-center pt-2 text-btn-border text-center">
+                    {error}
+                </div>
+            }
         </div>
     )
 }
