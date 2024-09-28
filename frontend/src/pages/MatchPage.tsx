@@ -1,12 +1,14 @@
 import {useState} from "react";
-import WordList, {WordPair} from "../components/WordList.tsx";
+import WordList, {Word, WordPair} from "../components/WordList.tsx";
 
 export default function MatchPage() {
     const [clicked, setClicked] = useState(false)
     const [word, setWord] = useState("")
     const [error, setError] = useState("")
 
-    const wordPairs: WordPair[] = [
+    const [wordPairs, setWordPairs] = useState<WordPair[]>([])
+
+    /*const wordPairs: WordPair[] = [
         {
             word: {
                 text: "",
@@ -27,7 +29,8 @@ export default function MatchPage() {
                 hidden: false
             },
         }
-    ]
+    ]*/
+
 
     function guessWord() {
         // Validate word
@@ -47,6 +50,22 @@ export default function MatchPage() {
         setClicked(true)
 
         console.log(word)
+
+        // TODO: Add transition to entry
+        setWordPairs(prevState => {
+            const entry: WordPair = {
+                word: {
+                    text: word,
+                    hidden: false
+                },
+                teamMateWord: {
+                    text: "abcdefghi",
+                    hidden: true
+                }
+            }
+
+            return [...prevState, entry]
+        })
     }
 
     return (
