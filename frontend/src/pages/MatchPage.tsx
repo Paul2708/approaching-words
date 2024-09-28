@@ -1,5 +1,5 @@
 import {useState} from "react";
-import WordList, {Word, WordPair} from "../components/WordList.tsx";
+import WordList, {WordPair} from "../components/WordList.tsx";
 
 export default function MatchPage() {
     const [clicked, setClicked] = useState(false)
