@@ -3,6 +3,8 @@ import WordList, {WordPair} from "../components/WordList.tsx";
 
 export default function MatchPage() {
     const [clicked, setClicked] = useState(false)
+    const [word, setWord] = useState("")
+    const [error, setError] = useState("")
 
     const wordPairs: WordPair[] = [
         {
@@ -27,6 +29,26 @@ export default function MatchPage() {
         }
     ]
 
+    function guessWord() {
+        // Validate word
+        if (word.length > 32) {
+            setError("The word is too long. Only 32 characters are allowed.")
+            return
+        }
+
+        const regex = /^[a-zA-Z-]+$/
+        if (!regex.test(word)) {
+            setError("The word contains illegal characters. Only letters and - are allowed.")
+            return;
+        }
+
+        // Guess word
+        setError("")
+        setClicked(true)
+
+        console.log(word)
+    }
+
     return (
         <div className="p-8 min-h-screen">
             <div className="font-title uppercase text-4xl flex flex-col text-white">
@@ -50,12 +72,13 @@ export default function MatchPage() {
                 </div>
                 <div className="flex flex-col w-full pl-16 pr-16 pt-5">
                     <input className="rounded p-2 border border-black" placeholder="e.g., Apple"
+                           onChange={(e) => setWord(e.target.value)}
                            disabled={clicked}
                     />
                     {!clicked ?
                         <button
                             className="bg-btn border-btn-border text-white rounded-2xl border-4 w-full mt-5 p-1"
-                            onClick={() => setClicked(true)}
+                            onClick={() => guessWord()}
                         >Guess
                         </button> :
                         <button
@@ -65,6 +88,12 @@ export default function MatchPage() {
                     }
                 </div>
             </div>
+
+            {error !== "" &&
+                <div className="flex flex-col items-center pt-2 text-btn-border text-center">
+                    {error}
+                </div>
+            }
 
             <WordList title="Recent Words" teamMate="SharebinAPI" wordPairs={wordPairs}/>
         </div>
