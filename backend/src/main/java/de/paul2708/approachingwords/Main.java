@@ -9,6 +9,6 @@ public class Main {
     public static void main(String[] args) {
         GameManager gameManager = new GameManager();
         WebSocketServer socketServer = new GameServer(gameManager);
-        socketServer.run();
+        socketServer.start();
     }
 }

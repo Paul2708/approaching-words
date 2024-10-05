@@ -26,4 +26,8 @@ public class Player {
     public String getUsername() {
         return username;
     }
+
+    public boolean hasUsername() {
+        return username != null;
+    }
 }

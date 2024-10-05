@@ -22,13 +22,31 @@ public class GameManager {
     private final MessageHandler messageHandler;
 
     private final Map<String, Player> sessions;
-
+    private Player waitingPlayer;
 
     public GameManager() {
         this.messageHandler = (player, message) -> {
+            if (player.hasUsername()) {
+                log.warn("Player {} tried to join the queue a second time", message.getUsername());
+                return;
+            }
+
+            // TODO: Validate username
+
             log.debug("Received new join queue message: {}", message.getUsername());
 
             player.setUsername(message.getUsername());
+
+            synchronized (this) {
+                if (waitingPlayer == null) {
+                    waitingPlayer = player;
+                } else {
+                    var match = new Match(waitingPlayer, player);
+                    match.start();
+
+                    waitingPlayer = null;
+                }
+            }
         };
 
         this.sessions = new ConcurrentHashMap<>();
@@ -59,7 +77,7 @@ public class GameManager {
 
             String session = jsonNode.get("session").asText();
             if (!sessions.containsKey(session)) {
-                log.error("The session '{}' does not refer to a player.", type);
+                log.error("The session '{}' does not refer to a player.", session);
                 return;
             }
             Player player = sessions.get(session);
