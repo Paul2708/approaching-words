@@ -1,13 +1,14 @@
 package de.paul2708.approachingwords;
 
+import de.paul2708.approachingwords.game.GameManager;
+import de.paul2708.approachingwords.game.GameServer;
 import org.java_websocket.server.WebSocketServer;
-
-import java.net.InetSocketAddress;
 
 public class Main {
 
     public static void main(String[] args) {
-        WebSocketServer socketServer = new BackendServer(new InetSocketAddress("0.0.0.0", 8000));
+        GameManager gameManager = new GameManager();
+        WebSocketServer socketServer = new GameServer(gameManager);
         socketServer.run();
     }
 }

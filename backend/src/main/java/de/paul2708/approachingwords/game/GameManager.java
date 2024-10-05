@@ -1,0 +1,73 @@
+package de.paul2708.approachingwords.game;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import de.paul2708.approachingwords.messages.in.IncomingMessage;
+import de.paul2708.approachingwords.messages.out.SessionMessage;
+import org.java_websocket.WebSocket;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+
+public class GameManager {
+
+    private static final Logger log = LoggerFactory.getLogger(GameManager.class);
+
+    private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
+
+    private final MessageHandler messageHandler;
+
+    private final Map<String, Player> sessions;
+
+
+    public GameManager() {
+        this.messageHandler = (player, message) -> {
+            log.debug("Received new join queue message: {}", message.getUsername());
+
+            player.setUsername(message.getUsername());
+        };
+
+        this.sessions = new ConcurrentHashMap<>();
+    }
+
+    public void createNewSession(WebSocket socket) {
+        String sessionId = UUID.randomUUID().toString();
+
+        Player player = new Player(socket, sessionId);
+        this.sessions.put(sessionId, player);
+
+        player.sendMessage(new SessionMessage(sessionId));
+    }
+
+    public void handleReceivedMessage(String receivedMessage) {
+        try {
+            JsonNode jsonNode = JSON_MAPPER.readTree(receivedMessage);
+            if (!jsonNode.has("type") || !jsonNode.has("session")) {
+                log.error("Message does not contain 'type' or 'session'.");
+                return;
+            }
+
+            String type = jsonNode.get("type").asText();
+            if (!IncomingMessage.REGISTERED_MESSAGES.containsKey(type)) {
+                log.error("The type '{}' is not a registered message type.", type);
+                return;
+            }
+
+            String session = jsonNode.get("session").asText();
+            if (!sessions.containsKey(session)) {
+                log.error("The session '{}' does not refer to a player.", type);
+                return;
+            }
+            Player player = sessions.get(session);
+
+            Class<? extends IncomingMessage> messageClass = IncomingMessage.REGISTERED_MESSAGES.get(type);
+            IncomingMessage.parse(receivedMessage, messageClass).handle(player, messageHandler);
+        } catch (JsonProcessingException e) {
+            log.error("Received malformed JSON message.", e);
+        }
+    }
+}
