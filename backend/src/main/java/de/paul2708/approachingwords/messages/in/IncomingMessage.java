@@ -12,7 +12,8 @@ import java.util.Map;
 public abstract class IncomingMessage extends Message {
 
     public static final Map<String, Class<? extends IncomingMessage>> REGISTERED_MESSAGES = Map.of(
-            "JOIN_QUEUE", JoinQueueMessage.class
+            "JOIN_QUEUE", JoinQueueMessage.class,
+            "WORD_GUESS", WordGuessMessage.class
     );
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
@@ -21,7 +22,7 @@ public abstract class IncomingMessage extends Message {
     private String session;
 
     public IncomingMessage() {
-        
+
     }
 
     public IncomingMessage(String type, String session) {

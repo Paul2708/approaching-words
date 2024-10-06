@@ -4,12 +4,16 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.paul2708.approachingwords.messages.in.IncomingMessage;
+import de.paul2708.approachingwords.messages.in.JoinQueueMessage;
+import de.paul2708.approachingwords.messages.in.WordGuessMessage;
 import de.paul2708.approachingwords.messages.out.SessionMessage;
 import org.java_websocket.WebSocket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -23,33 +27,52 @@ public class GameManager {
 
     private final Map<String, Player> sessions;
     private Player waitingPlayer;
+    private final Set<Match> matches;
 
     public GameManager() {
-        this.messageHandler = (player, message) -> {
-            if (player.hasUsername()) {
-                log.warn("Player {} tried to join the queue a second time", message.getUsername());
-                return;
+        this.messageHandler = new MessageHandler() {
+
+            @Override
+            public void onJoin(Player player, JoinQueueMessage message) {
+                if (player.hasUsername()) {
+                    log.warn("Player {} tried to join the queue a second time", message.getUsername());
+                    return;
+                }
+
+                // TODO: Validate username
+
+                log.debug("Received new join queue message: {}", message.getUsername());
+
+                player.setUsername(message.getUsername());
+
+                synchronized (this) {
+                    if (waitingPlayer == null) {
+                        waitingPlayer = player;
+                    } else {
+                        Match match = new Match(waitingPlayer, player);
+                        matches.add(match);
+
+                        match.start();
+                        waitingPlayer = null;
+                    }
+                }
             }
 
-            // TODO: Validate username
-
-            log.debug("Received new join queue message: {}", message.getUsername());
-
-            player.setUsername(message.getUsername());
-
-            synchronized (this) {
-                if (waitingPlayer == null) {
-                    waitingPlayer = player;
-                } else {
-                    var match = new Match(waitingPlayer, player);
-                    match.start();
-
-                    waitingPlayer = null;
+            @Override
+            public void onGuess(Player player, WordGuessMessage message) {
+                Match match = findMatch(player);
+                if (match == null) {
+                    log.warn("Could not find match for player {}", player.getSessionId());
+                    return;
                 }
+
+                match.guess(player, message.getWord());
             }
         };
 
         this.sessions = new ConcurrentHashMap<>();
+        this.waitingPlayer = null;
+        this.matches = new HashSet<>();
     }
 
     public void createNewSession(WebSocket socket) {
@@ -85,7 +108,17 @@ public class GameManager {
             Class<? extends IncomingMessage> messageClass = IncomingMessage.REGISTERED_MESSAGES.get(type);
             IncomingMessage.parse(receivedMessage, messageClass).handle(player, messageHandler);
         } catch (JsonProcessingException e) {
-            log.error("Received malformed JSON message.", e);
+            log.warn("Received malformed JSON message: {}", e.getMessage());
         }
+    }
+
+    private Match findMatch(Player player) {
+        for (Match match : matches) {
+            if (match.getPlayers().contains(player)) {
+                return match;
+            }
+        }
+
+        return null;
     }
 }
