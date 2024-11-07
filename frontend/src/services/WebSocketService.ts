@@ -40,7 +40,7 @@ class WebSocketService {
         this.listeners[eventType] = this.listeners[eventType].filter(cb => cb !== callback);
     }
 
-    private notifyListeners(data): void {
+    private notifyListeners(data: any): void {
         const eventType = data.type;
         const listeners = this.listeners[eventType] || [];
         listeners.forEach(callback => callback(JSON.stringify(data)));

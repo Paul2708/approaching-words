@@ -1,7 +1,12 @@
 import {useState} from "react";
-import WordList from "../components/WordList.tsx";
+import WordList, {WordPair} from "../components/WordList.tsx";
 
-export default function WinPage({opponent, wordPairs}) {
+export interface WinPageProps {
+    opponent: string
+    wordPairs: WordPair[]
+}
+
+export default function WinPage(props: WinPageProps) {
     const [clicked, setClicked] = useState(false)
 
     return (
@@ -23,12 +28,14 @@ export default function WinPage({opponent, wordPairs}) {
             <div className="font-header flex flex-col items-center pt-8">
                 <div className="text-white text-3xl text-center">Congratulations,<br/>You did it!</div>
                 <div className="pt-5">
-                    After <span className="font-bold">{wordPairs.length} tries</span>, you and {opponent} came up with the word <span
-                    className="text-[#FFDD00] font-bold">{wordPairs[wordPairs.length - 1].word.text}</span>.
+                    After <span className="font-bold">{props.wordPairs.length} tries</span>, you
+                    and {props.opponent} came up with
+                    the word <span
+                    className="text-[#FFDD00] font-bold">{props.wordPairs[props.wordPairs.length - 1].word.text}</span>.
                 </div>
             </div>
 
-            <WordList title={"Guesses"} teamMate={opponent} wordPairs={wordPairs}/>
+            <WordList title={"Guesses"} teamMate={props.opponent} wordPairs={props.wordPairs}/>
 
             <div className="flex flex-col w-full pl-16 pr-16 pt-5">
                 {!clicked ?

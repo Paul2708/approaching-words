@@ -1,15 +1,20 @@
-import {useEffect, useRef, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import WordList, {WordPair} from "../components/WordList.tsx";
-import {guess, LockedInMessage, RevealMessage} from "../services/BackendAPI";
+import {guess, RevealMessage} from "../services/BackendAPI";
 import webSocketService from "../services/WebSocketService";
 import {addGuessedWord, addHiddenWordFromOpponent, revealWord} from "../util/WordPairsHelper.ts";
-import {validateGuess, validateUsername} from "../util/Validator.ts";
+import {validateGuess} from "../util/Validator.ts";
 
-export default function MatchPage({opponent, setGlobalWordPairs}) {
+export interface MatchPageProps {
+    opponent: string
+    setGlobalWordPairs: React.Dispatch<React.SetStateAction<WordPair[]>>
+}
+
+export default function MatchPage(props: MatchPageProps) {
     const [clicked, setClicked] = useState(false)
     const [word, setWord] = useState("")
     const [error, setError] = useState("")
-    const inputRef = useRef(null);
+    const inputRef = useRef<HTMLInputElement>(null);
 
     const [wordPairs, setWordPairs] = useState<WordPair[]>([])
 
@@ -19,7 +24,7 @@ export default function MatchPage({opponent, setGlobalWordPairs}) {
                 return addHiddenWordFromOpponent(prevWordPairs)
             });
 
-            setGlobalWordPairs(prevWordPairs => {
+            props.setGlobalWordPairs(prevWordPairs => {
                 return addHiddenWordFromOpponent(prevWordPairs)
             });
         };
@@ -31,13 +36,15 @@ export default function MatchPage({opponent, setGlobalWordPairs}) {
                 return revealWord(prevWordState, message.opponent_word)
             })
 
-            setGlobalWordPairs(prevWordState => {
+            props.setGlobalWordPairs(prevWordState => {
                 return revealWord(prevWordState, message.opponent_word)
             })
 
             setClicked(false)
             setWord("")
-            inputRef.current.value = "";
+            if (inputRef.current) {
+                inputRef.current.value = "";
+            }
         }
 
         webSocketService.subscribe('LOCKED_IN', handleUpdate);
@@ -47,7 +54,7 @@ export default function MatchPage({opponent, setGlobalWordPairs}) {
             webSocketService.unsubscribe('LOCKED_IN', handleUpdate);
             webSocketService.unsubscribe('REVEAL', handleReveal);
         };
-    }, [setGlobalWordPairs]);
+    }, [props.setGlobalWordPairs]);
 
     function guessWord() {
         // Validate word
@@ -66,7 +73,7 @@ export default function MatchPage({opponent, setGlobalWordPairs}) {
         setWordPairs(prevWordPairs => {
             return addGuessedWord(prevWordPairs, word)
         })
-        setGlobalWordPairs(prevWordPairs => {
+        props.setGlobalWordPairs(prevWordPairs => {
             return addGuessedWord(prevWordPairs, word)
         })
     }
@@ -83,7 +90,7 @@ export default function MatchPage({opponent, setGlobalWordPairs}) {
             <div className="font-header flex flex-col items-center pt-8">
                 <div className="text-white text-3xl">Your Teammate</div>
                 <div
-                    className="shadow-2xl border text-white bg-[#BA0505] pl-5 pr-5 pt-2 pb-2 text-3xl mt-4 rounded border-[#363636]">{opponent}
+                    className="shadow-2xl border text-white bg-[#BA0505] pl-5 pr-5 pt-2 pb-2 text-3xl mt-4 rounded border-[#363636]">{props.opponent}
                 </div>
             </div>
 
@@ -118,7 +125,7 @@ export default function MatchPage({opponent, setGlobalWordPairs}) {
                 </div>
             }
 
-            <WordList title="Recent Words" teamMate={opponent} wordPairs={wordPairs}/>
+            <WordList title="Recent Words" teamMate={props.opponent} wordPairs={wordPairs}/>
         </div>
     )
 }

@@ -34,7 +34,7 @@ export default function App() {
         webSocketService.subscribe('REVEAL', (data: string): void => {
             const message: RevealMessage = JSON.parse(data)
 
-            if (message.gameState === "ENDED") {
+            if (message.match_state === "ENDED") {
                 setMainComponent(<WinPage opponent={opponent} wordPairs={globalWordPairs}/>)
             }
         });
