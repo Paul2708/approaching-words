@@ -1,15 +1,18 @@
-class WebSocketService {
-    constructor() {
-        this.socket = null;
-        this.listeners = {};
-    }
+type EventCallback = (data: string) => void;
 
-    connect(url) {
+class WebSocketService {
+    private socket: WebSocket | null = null;
+    private listeners: Record<string, EventCallback[]> = {};
+
+    connect(url: string): void {
         this.socket = new WebSocket(url);
 
-        this.socket.onmessage = (message) => {
-            const data = JSON.parse(message.data);
-            this.notifyListeners(data);
+        this.socket.onmessage = (message: MessageEvent) => {
+            console.log("RECEIVED Message:")
+            console.log(message.data)
+
+            const parsedObject = JSON.parse(message.data);
+            this.notifyListeners(parsedObject);
         };
 
         this.socket.onopen = () => {
@@ -25,27 +28,29 @@ class WebSocketService {
         };
     }
 
-    subscribe(eventType, callback) {
+    subscribe(eventType: string, callback: EventCallback): void {
         if (!this.listeners[eventType]) {
             this.listeners[eventType] = [];
         }
         this.listeners[eventType].push(callback);
     }
 
-    unsubscribe(eventType, callback) {
+    unsubscribe(eventType: string, callback: EventCallback): void {
         if (!this.listeners[eventType]) return;
         this.listeners[eventType] = this.listeners[eventType].filter(cb => cb !== callback);
     }
 
-    notifyListeners(data) {
-        const eventType = data.type; // assuming each WebSocket message has a `type` field
+    private notifyListeners(data): void {
+        const eventType = data.type;
         const listeners = this.listeners[eventType] || [];
-        listeners.forEach(callback => callback(data));
+        listeners.forEach(callback => callback(JSON.stringify(data)));
     }
 
-    sendMessage(message) {
+    sendMessage(message: string): void {
         if (this.socket && this.socket.readyState === WebSocket.OPEN) {
-            this.socket.send(JSON.stringify(message));
+            this.socket.send(message);
+        } else {
+            console.error("WebSocket is not open. Unable to send message.");
         }
     }
 }

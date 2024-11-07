@@ -1,6 +1,6 @@
 import {useEffect, useRef, useState} from "react";
 import WordList, {WordPair} from "../components/WordList.tsx";
-import {guess} from "../services/BackendAPI";
+import {guess, LockedInMessage, RevealMessage} from "../services/BackendAPI";
 import webSocketService from "../services/WebSocketService";
 
 export default function MatchPage({opponent, setGlobalWordPairs}) {
@@ -12,9 +12,7 @@ export default function MatchPage({opponent, setGlobalWordPairs}) {
     const [wordPairs, setWordPairs] = useState<WordPair[]>([])
 
     useEffect(() => {
-        const handleUpdate = (data) => {
-            console.log(data)
-
+        const handleUpdate = () => {
             setWordPairs(prevWordPairs => {
                 if (prevWordPairs.length === 0) {
                     return [
@@ -99,14 +97,16 @@ export default function MatchPage({opponent, setGlobalWordPairs}) {
             });
         };
 
-        function handleReveal(data) {
+        function handleReveal(data: string) {
+            const message: RevealMessage = JSON.parse(data)
+
             setWordPairs(prevWordState => {
                 const latestIndex = prevWordState.length - 1;
                 const updatedWordPairs = [...prevWordState];
                 updatedWordPairs[latestIndex] = {
                     ...prevWordState[latestIndex],
                     teamMateWord: {
-                        text: data.opponent_word,
+                        text: message.opponent_word,
                         hidden: false
                     }
                 };
@@ -120,7 +120,7 @@ export default function MatchPage({opponent, setGlobalWordPairs}) {
                 updatedWordPairs[latestIndex] = {
                     ...prevWordState[latestIndex],
                     teamMateWord: {
-                        text: data.opponent_word,
+                        text: message.opponent_word,
                         hidden: false
                     }
                 };
@@ -140,32 +140,7 @@ export default function MatchPage({opponent, setGlobalWordPairs}) {
             webSocketService.unsubscribe('LOCKED_IN', handleUpdate);
             webSocketService.unsubscribe('REVEAL', handleReveal);
         };
-    }, []);
-
-
-    /*const wordPairs: WordPair[] = [
-        {
-            word: {
-                text: "",
-                hidden: false
-            },
-            teamMateWord: {
-                text: "abcdefghi",
-                hidden: true
-            },
-        },
-        {
-            word: {
-                text: "apple",
-                hidden: false
-            },
-            teamMateWord: {
-                text: "chess",
-                hidden: false
-            },
-        }
-    ]*/
-
+    }, [setGlobalWordPairs]);
 
     function guessWord() {
         // Validate word
