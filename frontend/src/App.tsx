@@ -14,7 +14,7 @@ export default function App() {
     const [globalWordPairs, setGlobalWordPairs] = useState<WordPair[]>([])
 
     useEffect(() => {
-        webSocketService.connect('ws://localhost:8000');
+        webSocketService.connect(import.meta.env.VITE_WS_URL);
     }, []);
 
 
