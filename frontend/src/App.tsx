@@ -5,6 +5,7 @@ import MatchPage from "./pages/MatchPage.tsx";
 import {MatchFoundMessage, RevealMessage, SessionMessage, storeSession} from './services/BackendAPI.js'
 import WinPage from "./pages/WinPage.tsx";
 import {WordPair} from "./components/WordList.tsx";
+import {addClearWordFromOpponent} from "./util/WordPairsHelper.ts";
 
 export default function App() {
     const [mainComponent, setMainComponent] = useState(<LandingPage/>);
@@ -35,7 +36,12 @@ export default function App() {
             const message: RevealMessage = JSON.parse(data)
 
             if (message.match_state === "ENDED") {
-                setMainComponent(<WinPage opponent={opponent} wordPairs={globalWordPairs}/>)
+                setGlobalWordPairs(prevWordPairs => {
+                    const words: WordPair[] = addClearWordFromOpponent(prevWordPairs, message.opponent_word)
+                    setMainComponent(<WinPage opponent={opponent} wordPairs={words}/>)
+
+                    return words
+                })
             }
         });
     }, [globalWordPairs, opponent]);

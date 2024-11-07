@@ -54,13 +54,14 @@ export default function MatchPage(props: MatchPageProps) {
             webSocketService.unsubscribe('LOCKED_IN', handleUpdate);
             webSocketService.unsubscribe('REVEAL', handleReveal);
         };
-    }, [props.setGlobalWordPairs]);
+    }, [props, props.setGlobalWordPairs]);
 
     function guessWord() {
         // Validate word
         const error = validateGuess(word);
         if (error) {
             setError(error)
+            return
         }
 
         // Guess word

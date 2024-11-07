@@ -12,6 +12,7 @@ export default function LandingPage() {
         const error = validateUsername(username);
         if (error) {
             setError(error)
+            return
         }
 
         // Search game

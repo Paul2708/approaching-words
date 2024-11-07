@@ -26,15 +26,17 @@ export default function WordList(props: WordListProps) {
             </div>
             <div className="w-full max-w-4xl bg-[#CA7C7C] text-white shadow-lg rounded min-h-8">
                 <div className="flex flex-col w-full">
-                    {props.wordPairs.map(wordPair => (
-                        <div key={wordPair.word.text} className="flex w-full">
-                            <div className="w-1/2 p-2 text-center">{wordPair.word.text}</div>
-                            <div
-                                className={`w-1/2 p-2 text-center ${wordPair.teamMateWord.hidden ? "blur-sm" : ""}`}>
-                                {wordPair.teamMateWord.text}
+                    {props.wordPairs.slice()
+                        .reverse()
+                        .map((wordPair, index) => (
+                            <div key={index} className="flex w-full">
+                                <div className="w-1/2 p-2 text-center">{wordPair.word.text}</div>
+                                <div
+                                    className={`w-1/2 p-2 text-center ${wordPair.teamMateWord.hidden ? "blur-sm" : ""}`}>
+                                    {wordPair.teamMateWord.text}
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        ))}
                 </div>
             </div>
         </div>

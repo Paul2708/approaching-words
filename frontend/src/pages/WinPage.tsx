@@ -1,5 +1,6 @@
 import {useState} from "react";
 import WordList, {WordPair} from "../components/WordList.tsx";
+import {revealAllWords} from "../util/WordPairsHelper.ts";
 
 export interface WinPageProps {
     opponent: string
@@ -8,6 +9,7 @@ export interface WinPageProps {
 
 export default function WinPage(props: WinPageProps) {
     const [clicked, setClicked] = useState(false)
+    const wordPairs = revealAllWords(props.wordPairs)
 
     return (
         <div className="p-8 min-h-screen">
@@ -28,14 +30,14 @@ export default function WinPage(props: WinPageProps) {
             <div className="font-header flex flex-col items-center pt-8">
                 <div className="text-white text-3xl text-center">Congratulations,<br/>You did it!</div>
                 <div className="pt-5">
-                    After <span className="font-bold">{props.wordPairs.length} tries</span>, you
+                    After <span className="font-bold">{wordPairs.length} tries</span>, you
                     and {props.opponent} came up with
                     the word <span
-                    className="text-[#FFDD00] font-bold">{props.wordPairs[props.wordPairs.length - 1].word.text}</span>.
+                    className="text-[#FFDD00] font-bold">{wordPairs[wordPairs.length - 1].word.text}</span>.
                 </div>
             </div>
 
-            <WordList title={"Guesses"} teamMate={props.opponent} wordPairs={props.wordPairs}/>
+            <WordList title={"Guesses"} teamMate={props.opponent} wordPairs={wordPairs}/>
 
             <div className="flex flex-col w-full pl-16 pr-16 pt-5">
                 {!clicked ?

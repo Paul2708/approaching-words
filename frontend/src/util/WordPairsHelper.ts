@@ -43,6 +43,19 @@ export function addHiddenWordFromOpponent(wordPairs: WordPair[]): WordPair[] {
     }
 }
 
+export function addClearWordFromOpponent(wordPairs: WordPair[], word: string): WordPair[] {
+    const latestIndex = wordPairs.length - 1;
+    const updatedWordPairs = [...wordPairs];
+    updatedWordPairs[latestIndex] = {
+        ...wordPairs[latestIndex],
+        teamMateWord: {
+            text: word,
+            hidden: false
+        }
+    };
+
+    return updatedWordPairs;
+}
 
 export function revealWord(wordPairs: WordPair[], word: string): WordPair[] {
     const latestIndex = wordPairs.length - 1;
@@ -96,4 +109,11 @@ export function addGuessedWord(wordPairs: WordPair[], word: string): WordPair[] 
 
         return updatedWordPairs;
     }
+}
+
+export function revealAllWords(wordPairs: WordPair[]): WordPair[] {
+    return wordPairs.map(pair => ({
+        word: {...pair.word, hidden: false},
+        teamMateWord: {...pair.teamMateWord, hidden: false}
+    }));
 }
