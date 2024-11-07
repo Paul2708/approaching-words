@@ -3,6 +3,7 @@ import WordList, {WordPair} from "../components/WordList.tsx";
 import {guess, LockedInMessage, RevealMessage} from "../services/BackendAPI";
 import webSocketService from "../services/WebSocketService";
 import {addGuessedWord, addHiddenWordFromOpponent, revealWord} from "../util/WordPairsHelper.ts";
+import {validateGuess, validateUsername} from "../util/Validator.ts";
 
 export default function MatchPage({opponent, setGlobalWordPairs}) {
     const [clicked, setClicked] = useState(false)
@@ -50,22 +51,14 @@ export default function MatchPage({opponent, setGlobalWordPairs}) {
 
     function guessWord() {
         // Validate word
-        if (word.length > 32) {
-            setError("The word is too long. Only 32 characters are allowed.")
-            return
-        }
-
-        const regex = /^[a-zA-Z-]+$/
-        if (!regex.test(word)) {
-            setError("The word contains illegal characters. Only letters and - are allowed.")
-            return;
+        const error = validateGuess(word);
+        if (error) {
+            setError(error)
         }
 
         // Guess word
         setError("")
         setClicked(true)
-
-        console.log(word)
 
         guess(word)
 

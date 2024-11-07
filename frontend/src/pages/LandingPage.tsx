@@ -1,5 +1,6 @@
 import {useState} from "react";
 import {joinQueue} from "../services/BackendAPI.js";
+import {validateUsername} from "../util/Validator.ts";
 
 export default function LandingPage() {
     const [username, setUsername] = useState("")
@@ -8,22 +9,14 @@ export default function LandingPage() {
 
     function searchGame() {
         // Validate username
-        if (username.length > 16) {
-            setError("The username is too long. Only 16 characters are allowed.")
-            return
-        }
-
-        const regex = /^[a-zA-Z0-9_-]+$/
-        if (!regex.test(username)) {
-            setError("The username contains illegal characters. Only alphanumeric characters, -, and _ are allowed.")
-            return;
+        const error = validateUsername(username);
+        if (error) {
+            setError(error)
         }
 
         // Search game
         setError("")
         setClicked(true)
-
-        console.log(username)
 
         joinQueue(username)
     }
