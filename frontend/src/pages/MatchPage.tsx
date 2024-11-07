@@ -4,6 +4,7 @@ import {guess, RevealMessage} from "../services/BackendAPI";
 import webSocketService from "../services/WebSocketService";
 import {addGuessedWord, addHiddenWordFromOpponent, revealWord} from "../util/WordPairsHelper.ts";
 import {validateGuess} from "../util/Validator.ts";
+import Header from "../components/Header.tsx";
 
 export interface MatchPageProps {
     opponent: string
@@ -80,13 +81,8 @@ export default function MatchPage(props: MatchPageProps) {
     }
 
     return (
-        <div className="p-8 min-h-screen">
-            <div className="font-title uppercase text-4xl flex flex-col text-white">
-                <div
-                    className="self-start drop-shadow-[5px_5px_5px_rgba(0,0,0,1)] animate-move-left-to-right">Approaching
-                </div>
-                <div className="self-end drop-shadow-[5px_5px_5px_rgba(0,0,0,1)] animate-move-right-to-left">Words</div>
-            </div>
+        <div className="p-8 min-h-screen md:pl-[25%] md:pr-[25%]">
+            <Header/>
 
             <div className="font-header flex flex-col items-center pt-8">
                 <div className="text-white text-3xl">Your Teammate</div>
@@ -100,7 +96,7 @@ export default function MatchPage(props: MatchPageProps) {
                 <div className="pt-5">
                     Enter a word to converge to the same word.
                 </div>
-                <div className="flex flex-col w-full pl-16 pr-16 pt-5">
+                <div className="flex flex-col w-full max-w-2xl pl-16 pr-16 pt-5">
                     <input className="rounded p-2 border border-black" placeholder="e.g., Apple"
                            onChange={(e) => setWord(e.target.value)}
                            disabled={clicked}
