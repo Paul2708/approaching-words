@@ -35,11 +35,6 @@ export function guess(word: string): void {
         console.error("Session ID is not set. Cannot guess.");
     }
 }
-
-export interface LockedInMessage {
-    type: 'LOCKED_IN';
-}
-
 export interface MatchFoundMessage {
     type: 'MATCH_FOUND';
     opponent: string;

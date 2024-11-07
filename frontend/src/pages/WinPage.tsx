@@ -21,7 +21,7 @@ export default function WinPage(props: WinPageProps) {
             <div className="font-header flex flex-col items-center pt-8">
                 <div className="text-white text-3xl">Your Teammate</div>
                 <div
-                    className="shadow-2xl border text-white bg-[#BA0505] pl-5 pr-5 pt-2 pb-2 text-3xl mt-4 rounded border-[#363636]">SharebinAPI
+                    className="shadow-2xl border text-white bg-[#BA0505] pl-5 pr-5 pt-2 pb-2 text-3xl mt-4 rounded border-[#363636]">{props.opponent}
                 </div>
             </div>
 
