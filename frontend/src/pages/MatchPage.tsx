@@ -1,12 +1,147 @@
-import {useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import WordList, {WordPair} from "../components/WordList.tsx";
+import {guess} from "../services/BackendAPI";
+import webSocketService from "../services/WebSocketService";
 
-export default function MatchPage() {
+export default function MatchPage({opponent, setGlobalWordPairs}) {
     const [clicked, setClicked] = useState(false)
     const [word, setWord] = useState("")
     const [error, setError] = useState("")
+    const inputRef = useRef(null);
 
     const [wordPairs, setWordPairs] = useState<WordPair[]>([])
+
+    useEffect(() => {
+        const handleUpdate = (data) => {
+            console.log(data)
+
+            setWordPairs(prevWordPairs => {
+                if (prevWordPairs.length === 0) {
+                    return [
+                        {
+                            word: {
+                                text: "",
+                                hidden: false
+                            },
+                            teamMateWord: {
+                                text: "abcdefghi",
+                                hidden: true
+                            },
+                        },
+                    ]
+                } else {
+                    if (prevWordPairs[prevWordPairs.length - 1].word.text !== "" && prevWordPairs[prevWordPairs.length - 1].teamMateWord.text !== "") {
+                        return [...prevWordPairs, {
+                            word: {
+                                text: "",
+                                hidden: false
+                            },
+                            teamMateWord: {
+                                text: "rgeerg123",
+                                hidden: true
+                            }
+                        }]
+                    } else {
+                        const latestIndex = prevWordPairs.length - 1;
+                        const updatedWordPairs = [...prevWordPairs];
+                        updatedWordPairs[latestIndex] = {
+                            ...prevWordPairs[latestIndex],
+                            teamMateWord: {
+                                text: "aBcDeFgH",
+                                hidden: true
+                            }
+                        };
+
+                        return updatedWordPairs;
+                    }
+                }
+            });
+            setGlobalWordPairs(prevWordPairs => {
+                if (prevWordPairs.length === 0) {
+                    return [
+                        {
+                            word: {
+                                text: "",
+                                hidden: false
+                            },
+                            teamMateWord: {
+                                text: "abcdefghi",
+                                hidden: true
+                            },
+                        },
+                    ]
+                } else {
+                    if (prevWordPairs[prevWordPairs.length - 1].word.text !== "" && prevWordPairs[prevWordPairs.length - 1].teamMateWord.text !== "") {
+                        return [...prevWordPairs, {
+                            word: {
+                                text: "",
+                                hidden: false
+                            },
+                            teamMateWord: {
+                                text: "rgeerg123",
+                                hidden: true
+                            }
+                        }]
+                    } else {
+                        const latestIndex = prevWordPairs.length - 1;
+                        const updatedWordPairs = [...prevWordPairs];
+                        updatedWordPairs[latestIndex] = {
+                            ...prevWordPairs[latestIndex],
+                            teamMateWord: {
+                                text: "aBcDeFgH",
+                                hidden: true
+                            }
+                        };
+
+                        return updatedWordPairs;
+                    }
+                }
+            });
+        };
+
+        function handleReveal(data) {
+            setWordPairs(prevWordState => {
+                const latestIndex = prevWordState.length - 1;
+                const updatedWordPairs = [...prevWordState];
+                updatedWordPairs[latestIndex] = {
+                    ...prevWordState[latestIndex],
+                    teamMateWord: {
+                        text: data.opponent_word,
+                        hidden: false
+                    }
+                };
+
+                return updatedWordPairs
+            })
+
+            setGlobalWordPairs(prevWordState => {
+                const latestIndex = prevWordState.length - 1;
+                const updatedWordPairs = [...prevWordState];
+                updatedWordPairs[latestIndex] = {
+                    ...prevWordState[latestIndex],
+                    teamMateWord: {
+                        text: data.opponent_word,
+                        hidden: false
+                    }
+                };
+
+                return updatedWordPairs
+            })
+
+            setClicked(false)
+            setWord("")
+            inputRef.current.value = "";
+        }
+
+        webSocketService.subscribe('LOCKED_IN', handleUpdate);
+        webSocketService.subscribe('REVEAL', handleReveal);
+
+        return () => {
+            webSocketService.unsubscribe('LOCKED_IN', handleUpdate);
+            webSocketService.unsubscribe('REVEAL', handleReveal);
+        };
+    }, []);
+
 
     /*const wordPairs: WordPair[] = [
         {
@@ -51,20 +186,90 @@ export default function MatchPage() {
 
         console.log(word)
 
+        guess(word)
+
         // TODO: Add transition to entry
-        setWordPairs(prevState => {
-            const entry: WordPair = {
-                word: {
-                    text: word,
-                    hidden: false
-                },
-                teamMateWord: {
-                    text: "abcdefghi",
-                    hidden: true
+        setWordPairs(prevWordPairs => {
+            if (prevWordPairs.length === 0) {
+                const entry: WordPair = {
+                    word: {
+                        text: word,
+                        hidden: false
+                    },
+                    teamMateWord: {
+                        text: "",
+                        hidden: false
+                    }
+                }
+
+                return [...prevWordPairs, entry]
+            } else {
+                if (prevWordPairs[prevWordPairs.length - 1].word.text !== "" && prevWordPairs[prevWordPairs.length - 1].teamMateWord.text !== "") {
+                    return [...prevWordPairs, {
+                        word: {
+                            text: word,
+                            hidden: false
+                        },
+                        teamMateWord: {
+                            text: "",
+                            hidden: false
+                        }
+                    }]
+                } else {
+                    const latestIndex = prevWordPairs.length - 1;
+                    const updatedWordPairs = [...prevWordPairs];
+                    updatedWordPairs[latestIndex] = {
+                        ...prevWordPairs[latestIndex],
+                        word: {
+                            text: word,
+                            hidden: false
+                        }
+                    };
+
+                    return updatedWordPairs;
                 }
             }
+        })
+        setGlobalWordPairs(prevWordPairs => {
+            if (prevWordPairs.length === 0) {
+                const entry: WordPair = {
+                    word: {
+                        text: word,
+                        hidden: false
+                    },
+                    teamMateWord: {
+                        text: "",
+                        hidden: false
+                    }
+                }
 
-            return [...prevState, entry]
+                return [...prevWordPairs, entry]
+            } else {
+                if (prevWordPairs[prevWordPairs.length - 1].word.text !== "" && prevWordPairs[prevWordPairs.length - 1].teamMateWord.text !== "") {
+                    return [...prevWordPairs, {
+                        word: {
+                            text: word,
+                            hidden: false
+                        },
+                        teamMateWord: {
+                            text: "",
+                            hidden: false
+                        }
+                    }]
+                } else {
+                    const latestIndex = prevWordPairs.length - 1;
+                    const updatedWordPairs = [...prevWordPairs];
+                    updatedWordPairs[latestIndex] = {
+                        ...prevWordPairs[latestIndex],
+                        word: {
+                            text: word,
+                            hidden: false
+                        }
+                    };
+
+                    return updatedWordPairs;
+                }
+            }
         })
     }
 
@@ -80,7 +285,7 @@ export default function MatchPage() {
             <div className="font-header flex flex-col items-center pt-8">
                 <div className="text-white text-3xl">Your Teammate</div>
                 <div
-                    className="shadow-2xl border text-white bg-[#BA0505] pl-5 pr-5 pt-2 pb-2 text-3xl mt-4 rounded border-[#363636]">SharebinAPI
+                    className="shadow-2xl border text-white bg-[#BA0505] pl-5 pr-5 pt-2 pb-2 text-3xl mt-4 rounded border-[#363636]">{opponent}
                 </div>
             </div>
 
@@ -93,6 +298,7 @@ export default function MatchPage() {
                     <input className="rounded p-2 border border-black" placeholder="e.g., Apple"
                            onChange={(e) => setWord(e.target.value)}
                            disabled={clicked}
+                           ref={inputRef}
                     />
                     {!clicked ?
                         <button
@@ -114,7 +320,7 @@ export default function MatchPage() {
                 </div>
             }
 
-            <WordList title="Recent Words" teamMate="SharebinAPI" wordPairs={wordPairs}/>
+            <WordList title="Recent Words" teamMate={opponent} wordPairs={wordPairs}/>
         </div>
     )
 }

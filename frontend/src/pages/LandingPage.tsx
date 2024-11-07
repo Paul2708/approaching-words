@@ -1,4 +1,5 @@
 import {useState} from "react";
+import {joinQueue} from "../services/BackendAPI.js";
 
 export default function LandingPage() {
     const [username, setUsername] = useState("")
@@ -23,6 +24,8 @@ export default function LandingPage() {
         setClicked(true)
 
         console.log(username)
+
+        joinQueue(username)
     }
 
     return (
