@@ -2,11 +2,14 @@ package de.paul2708.approachingwords.game;
 
 import de.paul2708.approachingwords.messages.Message;
 import org.java_websocket.WebSocket;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
 
 public class Player {
 
+    private static final Logger log = LoggerFactory.getLogger(Player.class);
     private final WebSocket socket;
     private final String sessionId;
 
@@ -22,6 +25,11 @@ public class Player {
     }
 
     public void sendMessage(Message message) {
+        if (!socket.isOpen() || socket.isClosing() || socket.isClosed()) {
+            log.warn("Tried to send message {} to closed websocket", message.getType());
+            return;
+        }
+
         socket.send(message.toJson());
     }
 

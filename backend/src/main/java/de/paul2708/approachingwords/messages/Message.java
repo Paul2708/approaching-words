@@ -19,6 +19,10 @@ public class Message {
         this.type = type;
     }
 
+    public String getType() {
+        return type;
+    }
+
     public String toJson() {
         try {
             return OBJECT_MAPPER.writeValueAsString(this);
