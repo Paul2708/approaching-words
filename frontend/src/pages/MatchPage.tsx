@@ -2,6 +2,7 @@ import {useEffect, useRef, useState} from "react";
 import WordList, {WordPair} from "../components/WordList.tsx";
 import {guess, LockedInMessage, RevealMessage} from "../services/BackendAPI";
 import webSocketService from "../services/WebSocketService";
+import {addGuessedWord, addHiddenWordFromOpponent, revealWord} from "../util/WordPairsHelper.ts";
 
 export default function MatchPage({opponent, setGlobalWordPairs}) {
     const [clicked, setClicked] = useState(false)
@@ -14,86 +15,11 @@ export default function MatchPage({opponent, setGlobalWordPairs}) {
     useEffect(() => {
         const handleUpdate = () => {
             setWordPairs(prevWordPairs => {
-                if (prevWordPairs.length === 0) {
-                    return [
-                        {
-                            word: {
-                                text: "",
-                                hidden: false
-                            },
-                            teamMateWord: {
-                                text: "abcdefghi",
-                                hidden: true
-                            },
-                        },
-                    ]
-                } else {
-                    if (prevWordPairs[prevWordPairs.length - 1].word.text !== "" && prevWordPairs[prevWordPairs.length - 1].teamMateWord.text !== "") {
-                        return [...prevWordPairs, {
-                            word: {
-                                text: "",
-                                hidden: false
-                            },
-                            teamMateWord: {
-                                text: "rgeerg123",
-                                hidden: true
-                            }
-                        }]
-                    } else {
-                        const latestIndex = prevWordPairs.length - 1;
-                        const updatedWordPairs = [...prevWordPairs];
-                        updatedWordPairs[latestIndex] = {
-                            ...prevWordPairs[latestIndex],
-                            teamMateWord: {
-                                text: "aBcDeFgH",
-                                hidden: true
-                            }
-                        };
-
-                        return updatedWordPairs;
-                    }
-                }
+                return addHiddenWordFromOpponent(prevWordPairs)
             });
-            setGlobalWordPairs(prevWordPairs => {
-                if (prevWordPairs.length === 0) {
-                    return [
-                        {
-                            word: {
-                                text: "",
-                                hidden: false
-                            },
-                            teamMateWord: {
-                                text: "abcdefghi",
-                                hidden: true
-                            },
-                        },
-                    ]
-                } else {
-                    if (prevWordPairs[prevWordPairs.length - 1].word.text !== "" && prevWordPairs[prevWordPairs.length - 1].teamMateWord.text !== "") {
-                        return [...prevWordPairs, {
-                            word: {
-                                text: "",
-                                hidden: false
-                            },
-                            teamMateWord: {
-                                text: "rgeerg123",
-                                hidden: true
-                            }
-                        }]
-                    } else {
-                        const latestIndex = prevWordPairs.length - 1;
-                        const updatedWordPairs = [...prevWordPairs];
-                        updatedWordPairs[latestIndex] = {
-                            ...prevWordPairs[latestIndex],
-                            teamMateWord: {
-                                text: "aBcDeFgH",
-                                hidden: true
-                            }
-                        };
 
-                        return updatedWordPairs;
-                    }
-                }
+            setGlobalWordPairs(prevWordPairs => {
+                return addHiddenWordFromOpponent(prevWordPairs)
             });
         };
 
@@ -101,31 +27,11 @@ export default function MatchPage({opponent, setGlobalWordPairs}) {
             const message: RevealMessage = JSON.parse(data)
 
             setWordPairs(prevWordState => {
-                const latestIndex = prevWordState.length - 1;
-                const updatedWordPairs = [...prevWordState];
-                updatedWordPairs[latestIndex] = {
-                    ...prevWordState[latestIndex],
-                    teamMateWord: {
-                        text: message.opponent_word,
-                        hidden: false
-                    }
-                };
-
-                return updatedWordPairs
+                return revealWord(prevWordState, message.opponent_word)
             })
 
             setGlobalWordPairs(prevWordState => {
-                const latestIndex = prevWordState.length - 1;
-                const updatedWordPairs = [...prevWordState];
-                updatedWordPairs[latestIndex] = {
-                    ...prevWordState[latestIndex],
-                    teamMateWord: {
-                        text: message.opponent_word,
-                        hidden: false
-                    }
-                };
-
-                return updatedWordPairs
+                return revealWord(prevWordState, message.opponent_word)
             })
 
             setClicked(false)
@@ -165,86 +71,10 @@ export default function MatchPage({opponent, setGlobalWordPairs}) {
 
         // TODO: Add transition to entry
         setWordPairs(prevWordPairs => {
-            if (prevWordPairs.length === 0) {
-                const entry: WordPair = {
-                    word: {
-                        text: word,
-                        hidden: false
-                    },
-                    teamMateWord: {
-                        text: "",
-                        hidden: false
-                    }
-                }
-
-                return [...prevWordPairs, entry]
-            } else {
-                if (prevWordPairs[prevWordPairs.length - 1].word.text !== "" && prevWordPairs[prevWordPairs.length - 1].teamMateWord.text !== "") {
-                    return [...prevWordPairs, {
-                        word: {
-                            text: word,
-                            hidden: false
-                        },
-                        teamMateWord: {
-                            text: "",
-                            hidden: false
-                        }
-                    }]
-                } else {
-                    const latestIndex = prevWordPairs.length - 1;
-                    const updatedWordPairs = [...prevWordPairs];
-                    updatedWordPairs[latestIndex] = {
-                        ...prevWordPairs[latestIndex],
-                        word: {
-                            text: word,
-                            hidden: false
-                        }
-                    };
-
-                    return updatedWordPairs;
-                }
-            }
+            return addGuessedWord(prevWordPairs, word)
         })
         setGlobalWordPairs(prevWordPairs => {
-            if (prevWordPairs.length === 0) {
-                const entry: WordPair = {
-                    word: {
-                        text: word,
-                        hidden: false
-                    },
-                    teamMateWord: {
-                        text: "",
-                        hidden: false
-                    }
-                }
-
-                return [...prevWordPairs, entry]
-            } else {
-                if (prevWordPairs[prevWordPairs.length - 1].word.text !== "" && prevWordPairs[prevWordPairs.length - 1].teamMateWord.text !== "") {
-                    return [...prevWordPairs, {
-                        word: {
-                            text: word,
-                            hidden: false
-                        },
-                        teamMateWord: {
-                            text: "",
-                            hidden: false
-                        }
-                    }]
-                } else {
-                    const latestIndex = prevWordPairs.length - 1;
-                    const updatedWordPairs = [...prevWordPairs];
-                    updatedWordPairs[latestIndex] = {
-                        ...prevWordPairs[latestIndex],
-                        word: {
-                            text: word,
-                            hidden: false
-                        }
-                    };
-
-                    return updatedWordPairs;
-                }
-            }
+            return addGuessedWord(prevWordPairs, word)
         })
     }
 
