@@ -1,0 +1,12 @@
+services:
+  backend:
+    image: ghcr.io/paul2708/approaching-words/backend:latest
+    restart: always
+    ports:
+      - "10001:8000"
+
+  frontend:
+    image: ghcr.io/paul2708/approaching-words/frontend:latest
+    restart: always
+    ports:
+      - "10000:80"
