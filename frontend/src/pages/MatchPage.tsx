@@ -96,7 +96,14 @@ export default function MatchPage(props: MatchPageProps) {
                 <div className="pt-5">
                     Enter a word to converge to the same word.
                 </div>
-                <div className="flex flex-col w-full max-w-2xl pl-16 pr-16 pt-5">
+                <form className="flex flex-col w-full max-w-2xl pl-16 pr-16 pt-5"
+                      onSubmit={(e) => {
+                          e.preventDefault();
+
+                          if (!clicked) {
+                              guessWord();
+                          }
+                      }}>
                     <input className="rounded p-2 border border-black" placeholder="e.g., Apple"
                            onChange={(e) => setWord(e.target.value)}
                            disabled={clicked}
@@ -113,7 +120,7 @@ export default function MatchPage(props: MatchPageProps) {
                         >Waiting...
                         </button>
                     }
-                </div>
+                </form>
             </div>
 
             {error !== "" &&

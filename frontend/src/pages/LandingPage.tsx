@@ -40,8 +40,15 @@ export default function LandingPage() {
                 <div className="pt-5">
                     Choose your username and search for a game.
                 </div>
-                <div className="flex flex-col w-full max-w-2xl pl-16 pr-16 pt-5">
-                    <input className="rounded p-2 border border-black" placeholder="e.g., SharebinAPI"
+                <form className="flex flex-col w-full max-w-2xl pl-16 pr-16 pt-5"
+                      onSubmit={(e) => {
+                          e.preventDefault();
+
+                          if (!clicked) {
+                              searchGame();
+                          }
+                      }}>
+                    <input className="rounded p-2 border border-black" placeholder="e.g., Sammy"
                            onChange={(e) => setUsername(e.target.value)}
                            disabled={clicked}
                     />
@@ -56,7 +63,7 @@ export default function LandingPage() {
                         >Searching...
                         </button>
                     }
-                </div>
+                </form>
             </div>
 
             {error !== "" &&
