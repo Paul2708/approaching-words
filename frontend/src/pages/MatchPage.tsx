@@ -52,6 +52,7 @@ export default function MatchPage(props: MatchPageProps) {
 
         function handleDisconnect() {
             setDisconnected(true)
+            setClicked(true)
         }
 
         webSocketService.subscribe('LOCKED_IN', handleUpdate);
