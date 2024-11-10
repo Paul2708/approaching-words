@@ -6,6 +6,7 @@ import de.paul2708.approachingwords.messages.out.RevealMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Objects;
 import java.util.Set;
 
 public class Match {
@@ -59,5 +60,23 @@ public class Match {
 
     public Set<Player> getPlayers() {
         return Set.of(firstPlayer, secondPlayer);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        Match match = (Match) o;
+        return Objects.equals(firstPlayer, match.firstPlayer) && Objects.equals(secondPlayer, match.secondPlayer);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(firstPlayer, secondPlayer);
     }
 }

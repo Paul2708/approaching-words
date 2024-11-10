@@ -111,6 +111,7 @@ public class GameManager {
             Match match = findMatch(removedPlayer);
             if (match != null) {
                 match.getOppositePlayer(removedPlayer).sendMessage(new DisconnectMessage());
+                matches.remove(match);
 
                 log.info("Detected disconnect during running match");
             }
