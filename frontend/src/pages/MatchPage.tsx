@@ -19,6 +19,8 @@ export default function MatchPage(props: MatchPageProps) {
 
     const [wordPairs, setWordPairs] = useState<WordPair[]>([])
 
+    const [disconnected, setDisconnected] = useState(false)
+
     useEffect(() => {
         const handleUpdate = () => {
             setWordPairs(prevWordPairs => {
@@ -48,12 +50,18 @@ export default function MatchPage(props: MatchPageProps) {
             }
         }
 
+        function handleDisconnect() {
+            setDisconnected(true)
+        }
+
         webSocketService.subscribe('LOCKED_IN', handleUpdate);
         webSocketService.subscribe('REVEAL', handleReveal);
+        webSocketService.subscribe('DISCONNECT', handleDisconnect);
 
         return () => {
             webSocketService.unsubscribe('LOCKED_IN', handleUpdate);
             webSocketService.unsubscribe('REVEAL', handleReveal);
+            webSocketService.unsubscribe('DISCONNECT', handleDisconnect);
         };
     }, [props, props.setGlobalWordPairs]);
 
@@ -86,9 +94,18 @@ export default function MatchPage(props: MatchPageProps) {
 
             <div className="font-header flex flex-col items-center pt-8">
                 <div className="text-white text-3xl">Your Teammate</div>
-                <div
-                    className="shadow-2xl border text-white bg-[#BA0505] pl-5 pr-5 pt-2 pb-2 text-3xl mt-4 rounded border-[#363636]">{props.opponent}
-                </div>
+                {!disconnected ?
+                    <div
+                        className="shadow-2xl border text-white bg-[#BA0505] pl-5 pr-5 pt-2 pb-2 text-3xl mt-4 rounded border-[#363636]">{props.opponent}
+                    </div>
+                    :
+                    <>
+                    <div
+                        className="shadow-2xl border text-gray-200 bg-gray-500 pl-5 pr-5 pt-2 pb-2 text-3xl mt-4 rounded border-[#363636]">{props.opponent}
+                    </div>
+                    <div className="pt-5 text-[#BA0505] text-lg">Your teammate disconnected. Reload the page to queue again.</div>
+                    </>
+                }
             </div>
 
             <div className="font-header flex flex-col items-center pt-8">
