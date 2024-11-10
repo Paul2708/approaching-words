@@ -84,6 +84,34 @@ public class GameManager {
         player.sendMessage(new SessionMessage(sessionId));
     }
 
+    public synchronized void terminateSession(WebSocket socket) {
+        String toBeRemoved = null;
+        Player removedPlayer = null;
+
+        for (Map.Entry<String, Player> entry : this.sessions.entrySet()) {
+            Player player = entry.getValue();
+
+            if (player.matchesConnection(socket)) {
+                toBeRemoved = entry.getKey();
+                removedPlayer = player;
+                break;
+            }
+        }
+
+        if (toBeRemoved == null) {
+            log.warn("Received a disconnecting socket without associated session");
+            return;
+        }
+
+        // Delete session
+        if (waitingPlayer.equals(removedPlayer)) {
+            waitingPlayer = null;
+        }
+
+        this.sessions.remove(toBeRemoved);
+        log.info("Removed session {} due to disconnect", toBeRemoved);
+    }
+
     public void handleReceivedMessage(String receivedMessage) {
         try {
             JsonNode jsonNode = JSON_MAPPER.readTree(receivedMessage);

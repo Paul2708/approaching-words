@@ -42,6 +42,8 @@ public class GameServer extends WebSocketServer {
     @Override
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
         log.info("closed {} with exit code {} additional info: {}", conn.getRemoteSocketAddress(), code, reason);
+
+        gameManager.terminateSession(conn);
     }
 
     @Override

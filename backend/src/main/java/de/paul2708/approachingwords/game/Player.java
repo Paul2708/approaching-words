@@ -20,10 +20,6 @@ public class Player {
         this.sessionId = sessionId;
     }
 
-    public boolean hasUsername() {
-        return username != null;
-    }
-
     public void sendMessage(Message message) {
         if (!socket.isOpen() || socket.isClosing() || socket.isClosed()) {
             log.warn("Tried to send message {} to closed websocket", message.getType());
@@ -31,6 +27,14 @@ public class Player {
         }
 
         socket.send(message.toJson());
+    }
+
+    public boolean matchesConnection(WebSocket connection) {
+        return Objects.equals(socket, connection);
+    }
+
+    public boolean hasUsername() {
+        return username != null;
     }
 
     public void setUsername(String username) {
