@@ -53,6 +53,10 @@ public class Match {
         }
     }
 
+    public Player getOppositePlayer(Player player) {
+        return player.equals(firstPlayer) ? secondPlayer : firstPlayer;
+    }
+
     public Set<Player> getPlayers() {
         return Set.of(firstPlayer, secondPlayer);
     }

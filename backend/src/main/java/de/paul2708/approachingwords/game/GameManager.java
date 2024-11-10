@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.paul2708.approachingwords.messages.in.IncomingMessage;
 import de.paul2708.approachingwords.messages.in.JoinQueueMessage;
 import de.paul2708.approachingwords.messages.in.WordGuessMessage;
+import de.paul2708.approachingwords.messages.out.DisconnectMessage;
 import de.paul2708.approachingwords.messages.out.SessionMessage;
 import org.java_websocket.WebSocket;
 import org.slf4j.Logger;
@@ -104,8 +105,15 @@ public class GameManager {
         }
 
         // Delete session
-        if (waitingPlayer.equals(removedPlayer)) {
+        if (removedPlayer.equals(waitingPlayer)) {
             waitingPlayer = null;
+        } else {
+            Match match = findMatch(removedPlayer);
+            if (match != null) {
+                match.getOppositePlayer(removedPlayer).sendMessage(new DisconnectMessage());
+
+                log.info("Detected disconnect during running match");
+            }
         }
 
         this.sessions.remove(toBeRemoved);
