@@ -16,6 +16,7 @@ public class GameServer extends WebSocketServer {
 
     public GameServer(GameManager gameManager) {
         super(new InetSocketAddress("0.0.0.0", 8000));
+        setConnectionLostTimeout(10);
 
         this.gameManager = gameManager;
     }
@@ -34,6 +35,7 @@ public class GameServer extends WebSocketServer {
 
     @Override
     public void onMessage(WebSocket conn, String message) {
+        conn.sendPing();
         log.debug("received message from {}: {}", conn.getRemoteSocketAddress(), message);
 
         gameManager.handleReceivedMessage(message);
