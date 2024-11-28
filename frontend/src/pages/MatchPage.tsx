@@ -47,6 +47,10 @@ export default function MatchPage(props: MatchPageProps) {
             setWord("")
             if (inputRef.current) {
                 inputRef.current.value = "";
+
+                setTimeout(() => {
+                    inputRef.current?.focus()
+                }, 25);
             }
         }
 
@@ -126,6 +130,7 @@ export default function MatchPage(props: MatchPageProps) {
                            onChange={(e) => setWord(e.target.value)}
                            disabled={clicked}
                            ref={inputRef}
+                           autoFocus
                     />
                     {!clicked ?
                         <button

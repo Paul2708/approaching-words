@@ -51,6 +51,7 @@ export default function LandingPage() {
                     <input className="rounded p-2 border border-black" placeholder="e.g., Sammy"
                            onChange={(e) => setUsername(e.target.value)}
                            disabled={clicked}
+                           autoFocus
                     />
                     {!clicked ?
                         <button
