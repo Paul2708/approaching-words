@@ -3,6 +3,7 @@ type EventCallback = (data: string) => void;
 class WebSocketService {
     private socket: WebSocket | null = null;
     private listeners: Record<string, EventCallback[]> = {};
+    private onCloseHandler: (() => void) | undefined;
 
     connect(url: string): void {
         this.socket = new WebSocket(url);
@@ -21,6 +22,9 @@ class WebSocketService {
 
         this.socket.onclose = () => {
             console.log('WebSocket connection closed.');
+            if (this.onCloseHandler) {
+                this.onCloseHandler()
+            }
         };
 
         this.socket.onerror = (error) => {
@@ -52,6 +56,10 @@ class WebSocketService {
         } else {
             console.error("WebSocket is not open. Unable to send message.");
         }
+    }
+
+    handleDisconnect(handler: () => void): void {
+        this.onCloseHandler = handler;
     }
 }
 

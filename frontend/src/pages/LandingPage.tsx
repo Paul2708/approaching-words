@@ -2,11 +2,19 @@ import {useState} from "react";
 import {joinQueue} from "../services/BackendAPI.js";
 import {validateUsername} from "../util/Validator.ts";
 import Header from "../components/Header.tsx";
+import notificationService from "../services/NotificationService.ts";
+import webSocketService from "../services/WebSocketService.ts";
 
 export default function LandingPage() {
     const [username, setUsername] = useState("")
     const [clicked, setClicked] = useState(false)
     const [error, setError] = useState("")
+
+    webSocketService.handleDisconnect(() => {
+        setError("You lost the connection to the website. Please reload the page and queue again.")
+
+        notificationService.send("Connection lost", "Please reload the page and queue again.")
+    })
 
     function searchGame() {
         // Validate username
