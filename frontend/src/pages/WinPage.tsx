@@ -1,6 +1,7 @@
 import WordList, {WordPair} from "../components/WordList.tsx";
 import {revealAllWords} from "../util/WordPairsHelper.ts";
 import Header from "../components/Header.tsx";
+import Button from "../components/Button.tsx";
 
 export interface WinPageProps {
     opponent: string
@@ -34,11 +35,7 @@ export default function WinPage(props: WinPageProps) {
             <WordList title={"Guesses"} teamMate={props.opponent} wordPairs={wordPairs}/>
 
             <div className="w-full pl-16 pr-16 lg:pl-44 lg:pr-44 pt-5 flex flex-col items-center">
-                <button
-                    className="bg-btn border-btn-border text-white rounded-2xl border-4 w-full mt-5 p-1"
-                    onClick={() => window.location.reload()}
-                >Play Again
-                </button>
+                <Button text="Play Again" clickHandler={() => window.location.reload()}/>
             </div>
         </div>
     )

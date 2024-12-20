@@ -4,6 +4,7 @@ import {validateUsername} from "../util/Validator.ts";
 import Header from "../components/Header.tsx";
 import notificationService from "../services/NotificationService.ts";
 import webSocketService from "../services/WebSocketService.ts";
+import Button from "../components/Button.tsx";
 
 export default function LandingPage() {
     const [username, setUsername] = useState("")
@@ -61,17 +62,7 @@ export default function LandingPage() {
                            disabled={clicked}
                            autoFocus
                     />
-                    {!clicked ?
-                        <button
-                            className="bg-btn border-btn-border text-white rounded-2xl border-4 w-full mt-5 p-1"
-                            onClick={() => searchGame()}
-                        >Search
-                        </button> :
-                        <button
-                            className="bg-btn-active border-btn-border-active text-white rounded-2xl border-4 w-full mt-5 p-1"
-                        >Searching...
-                        </button>
-                    }
+                    <Button clicked={clicked} text="Search" clickedText="Searching..." clickHandler={searchGame}/>
                 </form>
             </div>
 

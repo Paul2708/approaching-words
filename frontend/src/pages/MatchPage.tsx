@@ -5,6 +5,7 @@ import webSocketService from "../services/WebSocketService";
 import {addGuessedWord, addHiddenWordFromOpponent, revealWord} from "../util/WordPairsHelper.ts";
 import {validateGuess} from "../util/Validator.ts";
 import Header from "../components/Header.tsx";
+import Button from "../components/Button.tsx";
 
 export interface MatchPageProps {
     opponent: string
@@ -132,17 +133,7 @@ export default function MatchPage(props: MatchPageProps) {
                            ref={inputRef}
                            autoFocus
                     />
-                    {!clicked ?
-                        <button
-                            className="bg-btn border-btn-border text-white rounded-2xl border-4 w-full mt-5 p-1"
-                            onClick={() => guessWord()}
-                        >Guess
-                        </button> :
-                        <button
-                            className="bg-btn-active border-btn-border-active text-white rounded-2xl border-4 w-full mt-5 p-1"
-                        >Waiting...
-                        </button>
-                    }
+                    <Button clicked={clicked} text="Guess" clickedText="Waiting..." clickHandler={guessWord}/>
                 </form>
             </div>
 
