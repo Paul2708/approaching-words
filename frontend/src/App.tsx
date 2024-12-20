@@ -6,6 +6,7 @@ import {MatchFoundMessage, RevealMessage, SessionMessage, storeSession} from './
 import WinPage from "./pages/WinPage.tsx";
 import {WordPair} from "./components/WordList.tsx";
 import {addClearWordFromOpponent} from "./util/WordPairsHelper.ts";
+import notificationService from "./services/NotificationService.ts";
 
 export default function App() {
     const [mainComponent, setMainComponent] = useState(<LandingPage/>);
@@ -14,6 +15,8 @@ export default function App() {
     const [globalWordPairs, setGlobalWordPairs] = useState<WordPair[]>([])
 
     useEffect(() => {
+        notificationService.requestPermission()
+
         webSocketService.connect(import.meta.env.VITE_WS_URL);
     }, []);
 
@@ -27,6 +30,8 @@ export default function App() {
 
         webSocketService.subscribe('MATCH_FOUND', (data: string): void => {
             const message: MatchFoundMessage = JSON.parse(data)
+
+            notificationService.send("Match found!", "You are playing together with " + message.opponent + ".")
 
             setOpponent(message.opponent)
             setMainComponent(<MatchPage opponent={message.opponent} setGlobalWordPairs={setGlobalWordPairs}/>)
